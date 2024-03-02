@@ -12,10 +12,15 @@ GET example.com/api/location?user_id=<user_id>
     "longitude": <longitude>
 }
 
-GET example.com/api/location/nearest?user_id=<user_id>&range=<range>
+GET example.com/api/location/nearest?user_id=<user_id>&range=<range>&count=<count>
 
 {
-    "latitude": <latitude>,
-    "longitude": <longitude>,
-    "user_id": <user_id>
+    count: <count>,
+    results: [
+        {
+            "latitude": <latitude>,
+            "longitude": <longitude>,
+            "user_id": <user_id>
+        }
+    ]
 }
