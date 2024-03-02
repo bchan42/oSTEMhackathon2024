@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Find That Pokemon</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #mapid { height: 400px; width: 600px; }
+    </style>
+</head>
+<body>
+    <div id="mapid"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+
+        function fetchAndFormatNearestLocations(userId, range, count, callback) {
+            fetch(`https://example.com/api/location/nearest?user_id=${userId}&range=${range}&count=${count}`)
+                .then(response => response.json())
+                .then(data => {
+                    const formattedLocations = data.map(item => ({
+                        lat: item.latitude,
+                        lon: item.longitude,
+                        userId: item.user_id
+                    }));
+                    callback(formattedLocations); // Pass the formatted data to the callback function
+                })
+                .catch(error => console.error('Failed to fetch locations:', error));
+        }
+
+        // Define User latitude and longitude
+        var user_latitude = 40.7128;
+        var user_longitude = -74.0060;
+
+        // Define Pokemon lat and long
+        var nearest_latitude = 40.73;
+        var nearest_longitude = -74.1;
+
+        // var nearest_distance = sqrt((user_latitude-nearest_latitude)^2 + (user_longitude-nearest_longitude)^2)
+
+        // Initialize the map on the "mapid" div with a given center and zoom
+        var mymap = L.map('mapid').setView([user_latitude, user_longitude], 13);
+
+        // Add OpenStreetMap tiles to the map
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(mymap);
+
+
+        // Add User marker to the map at the given position
+        // L.marker([user_latitude, user_longitude]).addTo(mymap);
+
+        // Add Pokemon Market
+        // L.marker([nearest_latitude, nearest_longitude]).addTo(mymap);
+
+        // Function for adding markets to map given list of locations
+        function addMarkersToMap(locations) {
+            locations.forEach(location => {
+                L.marker([location.lat, location.lon]).addTo(mymap)
+                    .bindPopup(`User ID: ${location.userId}`);
+            });
+        }
+
+        // Calling function to fetch data and also add markers
+        // fetchAndFormatNearestLocations('user123', 500, 5, addMarkersToMap);
+
+        //####################[ TESTING ]#############################################
+
+        var dummyLocations = [
+            { lat: 40.7128, lon: -74.0060, userId: 'user1' },
+            { lat: 40.7138, lon: -74.0010, userId: 'user2' },
+            { lat: 40.7148, lon: -74.0050, userId: 'user3' },
+            { lat: 40.7158, lon: -74.0000, userId: 'user4' },
+            { lat: 40.7168, lon: -74.0020, userId: 'user5' }
+        ];
+
+        addMarkersToMap(dummyLocations)
+
+        
+    </script>
+</body>
+</html>
