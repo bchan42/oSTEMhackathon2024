@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"math"
 	"net/http"
 	"sort"
@@ -39,6 +40,7 @@ func handleNearest(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "empty user_id", http.StatusBadRequest)
 		return
 	}
+	log.Println("Received request for /location/nearest")
 	var l Location
 	err := locations.FindOne(context.TODO(), bson.D{{"user_id", uid}}).Decode(&l)
 	if err != nil {
@@ -58,6 +60,8 @@ func handleNearest(w http.ResponseWriter, r *http.Request) {
 	if n == 0 {
 		n = 1
 	}
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	nearest := make([]Location, 0, n)
 	var o Location
@@ -80,6 +84,7 @@ func handleNearest(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+	log.Println("Found", len(nearest), "nearest locations")
 	json.NewEncoder(w).Encode(nearest)
 }
 
@@ -90,6 +95,8 @@ func handleLocation(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "empty user_id", http.StatusBadRequest)
 		return
 	}
+	log.Println("Received /location request for", uid)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	var l Location
 	switch r.Method {
 	case http.MethodGet:
@@ -108,12 +115,17 @@ func handleLocation(w http.ResponseWriter, r *http.Request) {
 		}
 		l.UserID = uid
 		if res, err := locations.ReplaceOne(context.TODO(), bson.D{{"user_id", uid}}, l); err != nil {
+			log.Println("Error:", err.Error())
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
 		} else if res.MatchedCount == 0 {
 			if _, err := locations.InsertOne(context.TODO(), l); err != nil {
+				log.Println("Error:", err.Error())
 				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
 			}
 		}
+		log.Println("Post success")
 		w.WriteHeader(http.StatusOK)
 	}
 }
