@@ -2,8 +2,6 @@
 
 from pymongo import MongoClient
 
-# webapp.py
-
 import json
 from functools import cached_property
 from http.cookies import SimpleCookie
@@ -31,6 +29,10 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def do_signup(self, data):
         status = 200
         # Sign up
+        if users.find_one({'email': data['email']}) is not None:
+            return 402
+        
+        users.insert_one(data)
         return status        
 
     def do_signin(self, data):
@@ -69,12 +71,14 @@ def get_database():
    # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
    client = MongoClient(CONNECTION_STRING)
    # Create the database for our example (we will use the same database throughout the tutorial
-   return client['user_information']
+   return client['db']
   
 # This is added so that many files can reuse the function get_database()
 if __name__ == "__main__":   
    # Get the database
     dbname = get_database()
+    global users
+    users = dbname['users']
 
     server = HTTPServer(("0.0.0.0", 8000), WebRequestHandler)
     server.serve_forever()
