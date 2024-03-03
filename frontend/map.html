@@ -26,7 +26,14 @@
                         lon: item.longitude,
                         userId: item.user_id
                     }));
+
+
+
                     // Add nearest users to map
+
+                    console.log('Nearest Users: ' + formattedLocations)
+
+
                     addMarkersToMap(formattedLocations, mymap)
 
                     return formattedLocations;
@@ -43,12 +50,18 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: body
                 });
-                console.log(body)
-                
+                console.log('Postlocation, body:' + body)
+
+
+                // TEST Posting
+
+
+
+
+
+                fetchAndFormatNearestLocations(user_ID, 10, 5)
 
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const data = await response.json();
-                console.log(data);
             } catch (error) {
                 console.error('Error posting location:', error);
             }
@@ -79,10 +92,20 @@
                         attribution: '© OpenStreetMap contributors'
                     }).addTo(mymap);
                     
-                    L.marker([user_latitude, user_longitude])
+                    L.marker([user_latitude, user_longitude]) // Add user marker
                         .addTo(mymap)
                         .bindPopup("You")
                         .openPopup();
+
+
+                    // Posting Test Homosexuals
+                    for(let i=1; i<10; i++){
+                        postLocation('Homosexual' + i, 
+                        user_latitude + Math.random()*.1-0.05, 
+                        user_longitude + Math.random()*.1-0.05, 
+                        new Date());
+                    }
+
 
                     // Sending Location to API
                     postLocation(user_ID, user_latitude, user_longitude, new Date());
@@ -102,7 +125,7 @@
             }
         }
         getLocation()
-        // then post location gets run
+        // then post location
         // then 
 
 
@@ -118,22 +141,14 @@
         //####################[ TESTING ]#############################################
 
         // Test locations for the pokemon
-        var dummyLocations = [
-            { lat: 40.7128, lon: -74.0060, userId: 'user1' },
-            { lat: 40.7138, lon: -74.0010, userId: 'user2' },
-            { lat: 40.7148, lon: -74.0050, userId: 'user3' },
-            { lat: 40.7158, lon: -74.0000, userId: 'user4' },
-            { lat: 40.7168, lon: -74.0020, userId: 'user5' }
-        ];
+        var dummyLocations = [];
+
+
 
         
 
         // Adding test users to database
-        // var random;
-        // for(let i=1; i<10; i++){
-        //     random = Math.random()*1.5
-        //     postLocation('Homosexual' + i, user_latitude + random, user_longitude + 2*random, new Date());
-        // }
+
 
 
     </script>
