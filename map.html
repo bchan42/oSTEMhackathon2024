@@ -12,7 +12,7 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
 
-        function fetchAndFormatNearestLocations(userId, range, count, callback) {
+        function fetchAndFormatNearestLocations(userId, range, count) {
             fetch(`https://example.com/api/location/nearest?user_id=${userId}&range=${range}&count=${count}`)
                 .then(response => response.json())
                 .then(data => {
@@ -21,7 +21,7 @@
                         lon: item.longitude,
                         userId: item.user_id
                     }));
-                    callback(formattedLocations); // Pass the formatted data to the callback function
+                    return formattedLocations;
                 })
                 .catch(error => console.error('Failed to fetch locations:', error));
         }
@@ -43,13 +43,6 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(mymap);
-
-
-        // Add User marker to the map at the given position
-        // L.marker([user_latitude, user_longitude]).addTo(mymap);
-
-        // Add Pokemon Market
-        // L.marker([nearest_latitude, nearest_longitude]).addTo(mymap);
 
         // Function for adding markets to map given list of locations
         function addMarkersToMap(locations) {
