@@ -27,13 +27,7 @@
                         userId: item.user_id
                     }));
 
-
-
                     // Add nearest users to map
-
-                    console.log('Nearest Users: ' + formattedLocations)
-
-
                     addMarkersToMap(formattedLocations, mymap)
 
                     return formattedLocations;
@@ -51,13 +45,6 @@
                     body: body
                 });
                 console.log('Postlocation, body:' + body)
-
-
-                // TEST Posting
-
-
-
-
 
                 fetchAndFormatNearestLocations(user_ID, 10, 5)
 
@@ -124,11 +111,6 @@
                 console.log("Geolocation is not supported by this browser.");
             }
         }
-        getLocation()
-        // then post location
-        // then 
-
-
 
         // Function for adding markers to map given list of locations
         function addMarkersToMap(locations, mymap) {
@@ -138,18 +120,10 @@
             });
         }
 
-        //####################[ TESTING ]#############################################
-
-        // Test locations for the pokemon
-        var dummyLocations = [];
-
-
-
-        
-
-        // Adding test users to database
-
-
+        getLocation()
+        // then post location
+        // then fetch nearest users
+        // then add markers
 
     </script>
 </body>
