@@ -12,6 +12,17 @@ services:
       - caddy
       - mongodb
 
+  auth:
+    build:
+      context: .
+      dockerfile: auth.Dockerfile
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    depends_on:
+      - caddy
+      - mongodb
+
   caddy:
     image: caddy:latest
     restart: unless-stopped
