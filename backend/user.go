@@ -10,7 +10,9 @@ import (
 )
 
 type User struct {
-	Name string `bson:"name" json:"name"`
+	Name     string `bson:"name" json:"name"`
+	Email    string `bson:"email" json:"email"`
+	Password string `bson"password json:"password"`
 }
 
 var users *mongo.Collection
@@ -21,7 +23,7 @@ func handleAddUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	res := users.FindOne(context.TODO(), bson.D{{"name", u.Name}})
+	res := users.FindOne(context.TODO(), bson.D{{"email", u.Email}})
 	if res.Err() != mongo.ErrNoDocuments {
 		http.Error(w, "user already exists", http.StatusBadRequest)
 		return
@@ -38,7 +40,7 @@ func handleRemoveUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	res, err := users.DeleteOne(context.TODO(), bson.D{{"name", u.Name}})
+	res, err := users.DeleteOne(context.TODO(), bson.D{{"email", u.Email}})
 	if err != nil || res.DeletedCount == 0 {
 		http.Error(w, "user does not exist", http.StatusBadRequest)
 		return
