@@ -1,12 +1,3 @@
-Hi :3
-foo
-i hate men
-
-
-Features to Implement:
-
-//////
-
 # Queer Hunt 
 
 ## Overview
@@ -57,6 +48,8 @@ Q: How do I delete my Queer Hunt account?
 
 A: Our interns are hard at work on this!
 
-
+a <br />
+b <br />
+c
 
 
