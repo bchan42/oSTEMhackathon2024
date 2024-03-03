@@ -54,6 +54,8 @@
         // Initialize User ID (this will be taken from the login screen)
         var user_ID = "homosexual1";
 
+        var mymap;
+
 
         // Get location from user device
         var user_latitude;
@@ -119,15 +121,18 @@
             { lat: 40.7168, lon: -74.0020, userId: 'user5' }
         ];
 
-        addMarkersToMap(dummyLocations)
 
 
         // Adding test users to database
+
         var random;
         for(let i=1; i<10; i++){
             random = Math.random()*1.5
             postLocation('Homosexual' + i, user_latitude + random, user_longitude + 2*random, new Date());
         }
+
+
+        addMarkersToMap(dummyLocations)
 
 
     </script>
