@@ -14,7 +14,7 @@
     <div id="mapid"></div>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
-
+        // Fetching Locations from API
         function fetchAndFormatNearestLocations(userId, range, count) {
             fetch(`https://example.com/api/location/nearest?user_id=${userId}&range=${range}&count=${count}`)
                 .then(response => response.json())
@@ -29,25 +29,46 @@
                 .catch(error => console.error('Failed to fetch locations:', error));
         }
 
-        // Define User latitude and longitude
-        // TODO get locations from local computer
-        var user_latitude = 40.7128;
-        var user_longitude = -74.0060;
+        // Get location from user device
+        var user_latitude;
+        var user_longitude;
+        function getLocation() {
+            if ("geolocation" in navigator) {
+                // Geolocation is supported, request the current position
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    // Success callback
+                    console.log("Latitude: " + position.coords.latitude);
+                    console.log("Longitude: " + position.coords.longitude);
 
+                    user_latitude = position.coords.latitude
+                    user_longitude = position.coords.longitude
 
+                    var mymap = L.map('mapid').setView([user_latitude, user_longitude], 13);
 
-        
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap contributors'
+                    }).addTo(mymap);
+                    
+                    L.marker([user_latitude, user_longitude])
+                        .addTo(mymap)
+                        .bindPopup("You")
+                        .openPopup();
+                }, function(error) {
+                    // Error callback
+                    console.error("Geolocation error: " + error.message);
+                }, {
+                    // Options (optional)
+                    enableHighAccuracy: true, // Whether to request the device to use more precise methods to determine location
+                    timeout: 5000, // Maximum time in milliseconds allowed for obtaining the position
+                    maximumAge: 0 // Maximum age in milliseconds of a possible cached position that is acceptable to return
+                });
+            } else {
+                // Geolocation isn’t supported, handle accordingly
+                console.log("Geolocation is not supported by this browser.");
+            }
+        }
+        getLocation()
 
-        // var nearest_distance = sqrt((user_latitude-nearest_latitude)^2 + (user_longitude-nearest_longitude)^2)
-
-        // Initialize the map on the "mapid" div with a given center and zoom
-        // TODO variable Distance dependent on 2nd nearest neighbor
-        var mymap = L.map('mapid').setView([user_latitude, user_longitude], 13);
-
-        // Add OpenStreetMap tiles to the map
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(mymap);
 
         // Function for adding markets to map given list of locations
         function addMarkersToMap(locations) {
@@ -56,9 +77,6 @@
                     .bindPopup(`User ID: ${location.userId}`);
             });
         }
-
-        // Calling function to fetch data and also add markers
-        // fetchAndFormatNearestLocations('user123', 500, 5, addMarkersToMap);
 
         //####################[ TESTING ]#############################################
 
@@ -73,7 +91,7 @@
 
         addMarkersToMap(dummyLocations)
 
-        
+
     </script>
 </body>
 </html>
