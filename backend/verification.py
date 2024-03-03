@@ -1,6 +1,43 @@
 # sign up verification
 
 from pymongo import MongoClient
+
+# webapp.py
+
+import json
+from functools import cached_property
+from http.cookies import SimpleCookie
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from urllib.parse import parse_qsl, urlparse
+
+class WebRequestHandler(BaseHTTPRequestHandler):
+    # ...
+
+    path = "/user"
+
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Headers", "*")
+        self.end_headers()
+        self.wfile.write(self.get_response().encode("utf-8"))
+
+    def do_POST(self):
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Headers", "*")
+        self.end_headers()
+        
+
+
+    # ...
+
+if __name__ == "__main__":
+    server = HTTPServer(("0.0.0.0", 8000), WebRequestHandler)
+    server.serve_forever()
+
 def get_database():
  
    # Provide the mongodb atlas url to connect python to mongodb using pymongo
@@ -51,7 +88,7 @@ def check_calpoly(email):
     return len(parts) == 2 and parts[1].lower() == domain
  
 # function checks if password is less than 
- def check_password(password):
+def check_password(password):
     if len(password) < 8: # at least 8 characters
         print('Password needs to be at least 8 characters long.')
     elif 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' not in password: # 1 capital letter
