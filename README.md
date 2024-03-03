@@ -1,3 +1,8 @@
+# TODO!!
+- logo in README?
+- verification stuff
+
+
 # Queer Hunt 
 
 ## Overview
