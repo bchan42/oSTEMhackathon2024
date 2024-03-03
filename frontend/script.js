@@ -6,7 +6,7 @@ const signinBtn = document.getElementById('submit_signin')
 
 async function sendData(name, email, password) {
     var body = JSON.stringify({ 'name':name, 'email':email, 'password':password })
-    const response = await fetch(`https://mongo.lone-faerie.xyz/api/user/add?user_id=${email}`, {
+    const response = await fetch(`https://mongo.lone-faerie.xyz/api/user/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: body,
@@ -37,7 +37,7 @@ signupBtn.addEventListener("click", () => {
 
     sendData(name, email, password)
     .then(() => {
-        window.location.replace("new url");
+        window.location.replace("http://127.0.0.1:5500/frontend/map.html");
     }).catch(() => {
 
     });
