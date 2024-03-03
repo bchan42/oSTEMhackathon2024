@@ -134,7 +134,7 @@
         function addMarkersToMap(locations, mymap) {
             locations.forEach(location => {
                 L.marker([location.lat, location.lon]).addTo(mymap)
-                    .bindPopup(`User ID: ${location.userId}`);
+                    .bindPopup(location.userId);
             });
         }
 
