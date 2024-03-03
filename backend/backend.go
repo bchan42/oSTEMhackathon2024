@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"os"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -16,6 +17,8 @@ const mongoURI = "mongodb://user:pass@mongo.lone-faerie.xyz:27017"
 
 func main() {
 	// locations = make(map[string]Location)
+
+	log.SetOutput(os.Stdout)
 
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mongoURI))
 	if err != nil {

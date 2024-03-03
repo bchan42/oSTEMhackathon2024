@@ -1,3 +1,4 @@
+<!-- Using Real Data (CORS VERSION) -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,18 +15,25 @@
     <div id="mapid"></div>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
+
         // Fetching Locations from API
         function fetchAndFormatNearestLocations(userId, range, count) {
-            return fetch(`https://mongo.lone-faerie.xyz/api/location/nearest?user_id=${userId}&range=${range}&count=${count}`)
-                .then(response => response.json())
-                .then(data => data.map(item => ({
-                    lat: item.latitude,
-                    lon: item.longitude,
-                    userId: item.user_id
-                })))
-                .catch(error => console.error('Failed to fetch locations:', error));
-}
+            fetch(`https://mongo.lone-faerie.xyz/api/location/nearest?user_id=${userId}&range=${range}&count=${count}`
+            ).then(response => response.json())
+                .then(data => {
+                    const formattedLocations = data.map(item => ({
+                        lat: item.latitude,
+                        lon: item.longitude,
+                        userId: item.user_id
+                    }));
 
+                    // Add nearest users to map
+                    addMarkersToMap(formattedLocations, mymap)
+
+                    return formattedLocations;
+                })
+                .catch(error => console.error('Failed to fetch locations:', error));
+        }
 
         // Function for posting data to API
         async function postLocation(userId, latitude, longitude, timestamp) {
@@ -34,14 +42,13 @@
                 const response = await fetch(`https://mongo.lone-faerie.xyz/api/location?user_id=${userId}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: body,
-                    mode: "no-cors"
+                    body: body
                 });
-                
+                console.log('Postlocation, body:' + body)
+
+                fetchAndFormatNearestLocations(user_ID, 10, 5)
 
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const data = await response.json();
-                console.log(data);
             } catch (error) {
                 console.error('Error posting location:', error);
             }
@@ -50,88 +57,73 @@
 
         // Initialize User ID (this will be taken from the login screen)
         var user_ID = "homosexual1";
-        // Initialize map as global var
-        var mymap;
-
+        var map;
 
         // Get location from user device
         var user_latitude;
         var user_longitude;
         function getLocation() {
             if ("geolocation" in navigator) {
+                // Geolocation is supported, request the current position
                 navigator.geolocation.getCurrentPosition(function(position) {
-                    user_latitude = position.coords.latitude;
-                    user_longitude = position.coords.longitude;
-                    initMap(user_latitude, user_longitude); // Initialize the map here
+                    // Success callback
+                    console.log("Latitude: " + position.coords.latitude);
+                    console.log("Longitude: " + position.coords.longitude);
 
-                    // Fetch nearby users and add markers after the map is initialized
-                    fetchAndFormatNearestLocations(user_ID, 10, 5)
-                        .then(nearby_users => {
-                            addMarkersToMap(nearby_users); // Use the fetched data
-                        });
+                    user_latitude = position.coords.latitude
+                    user_longitude = position.coords.longitude
 
-                    // Adding test users to database should be handled separately or within a suitable block
+                    mymap = L.map('mapid').setView([user_latitude, user_longitude], 13);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap contributors'
+                    }).addTo(mymap);
+                    
+                    L.marker([user_latitude, user_longitude]) // Add user marker
+                        .addTo(mymap)
+                        .bindPopup("You")
+                        .openPopup();
+
+
+                    // Posting Test Homosexuals
+                    for(let i=1; i<10; i++){
+                        postLocation('Homosexual' + i, 
+                        user_latitude + Math.random()*.1-0.05, 
+                        user_longitude + Math.random()*.1-0.05, 
+                        new Date());
+                    }
+
+
+                    // Sending Location to API
+                    postLocation(user_ID, user_latitude, user_longitude, new Date());
+
                 }, function(error) {
+                    // Error callback
                     console.error("Geolocation error: " + error.message);
                 }, {
-                    enableHighAccuracy: true,
-                    timeout: 5000,
-                    maximumAge: 0
+                    // Options (optional)
+                    enableHighAccuracy: true, // Whether to request the device to use more precise methods to determine location
+                    timeout: 5000, // Maximum time in milliseconds allowed for obtaining the position
+                    maximumAge: 0 // Maximum age in milliseconds of a possible cached position that is acceptable to return
                 });
             } else {
+                // if geolocation isn’t supported
                 console.log("Geolocation is not supported by this browser.");
             }
         }
 
-
-        function initMap(userLat, userLon) {
-            mymap = L.map('mapid').setView([userLat, userLon], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(mymap);
-
-            L.marker([userLat, userLon]).addTo(mymap).bindPopup("You").openPopup();
-        }
-
-
         // Function for adding markers to map given list of locations
-        function addMarkersToMap(locations) {
+        function addMarkersToMap(locations, mymap) {
             locations.forEach(location => {
                 L.marker([location.lat, location.lon]).addTo(mymap)
-                    .bindPopup(`User ID: ${location.userId}`);
+                    .bindPopup(location.userId);
             });
         }
 
-        // Test locations for the pokemon
-        
-        function generateDummyLocations(userLat, userLon) {
-            var dummyLocations = [];
-            for (let i = 0; i < 5; i++) {
-                let randomLat = userLat + (Math.random() - 0.5) * 0.01; // Small variation
-                let randomLon = userLon + (Math.random() - 0.5) * 0.01; // Small variation
-                dummyLocations.push({ lat: randomLat, lon: randomLon, userId: 'user' + i });
-            }
-
-            return dummyLocations;
-        }
-
-
-
-        // Adding test users to database
-        var random;
-        for(let i=1; i<10; i++){
-            random = Math.random()*1.5
-            postLocation('Homosexual' + i, user_latitude + random, user_longitude + 2*random, new Date());
-        }
-
-
-
-
-        getLocation();
-
-
-
-
+        getLocation()
+        // then post location
+        // then fetch nearest users
+        // then add markers
 
     </script>
 </body>
