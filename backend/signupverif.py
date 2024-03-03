@@ -15,24 +15,38 @@ class WebRequestHandler(BaseHTTPRequestHandler):
 
     path = "/user"
 
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Headers", "*")
-        self.end_headers()
-        self.wfile.write(self.get_response().encode("utf-8"))
+    # # 
+    # def do_GET(self):
+    #     status = 200
+    #     #insert logic (if any errors change value to 402)
+        
+    #     request = self.rfile.read(int(self.headers["Content-Length"]))
+    #     data = json.loads(request)
 
+    #     self.send_response(status)
+    #     self.send_header("Content-Type", "application/json")
+    #     self.send_header("Access-Control-Allow-Origin", "*")
+    #     self.send_header("Access-Control-Allow-Headers", "*")
+    #     self.end_headers()
+    #     self.wfile.write(self.get_response().encode("utf-8"))
+
+    # send data from frontend to backend
     def do_POST(self):
-        self.send_response(200)
+        status = 200 
+        # insert logic (if any errors in logic, change value of status to 402)
+
+        # send frontend data to server
+        request = self.rfile.read(int(self.headers["Content-Length"]))
+        data = json.loads(request)
+
+
+        self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Headers", "*")
         self.end_headers()
         
 
-
-    # ...
 
 
 def get_database():
@@ -46,7 +60,7 @@ def get_database():
 # This is added so that many files can reuse the function get_database()
 if __name__ == "__main__":   
    # Get the database
-   dbname = get_database()
+    dbname = get_database()
 
     server = HTTPServer(("0.0.0.0", 8000), WebRequestHandler)
     server.serve_forever()
