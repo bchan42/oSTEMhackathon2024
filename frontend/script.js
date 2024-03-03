@@ -10,8 +10,10 @@ async function sendData(name, email, password) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: body,
-        mode: "no-cors"
     });
+    if (!response.ok) {
+        throw Error
+    }
     console.log(body)
 }
 
@@ -32,6 +34,13 @@ signupBtn.addEventListener("click", () => {
     } else {
         console.log('Not a valid email')
     }
+
+    sendData(name, email, password)
+    .then(() => {
+        window.location.replace("new url");
+    }).catch(() => {
+
+    });
 })
 
 signinBtn.addEventListener("click", () => {
