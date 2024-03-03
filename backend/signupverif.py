@@ -11,26 +11,12 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qsl, urlparse
 
 class WebRequestHandler(BaseHTTPRequestHandler):
-    # ...
-
-    # # 
-    # def do_GET(self):
-    #     status = 200
-    #     #insert logic (if any errors change value to 402)
-        
-    #     request = self.rfile.read(int(self.headers["Content-Length"]))
-    #     data = json.loads(request)
-
-    #     self.send_response(status)
-    #     self.send_header("Content-Type", "application/json")
-    #     self.send_header("Access-Control-Allow-Origin", "*")
-    #     self.send_header("Access-Control-Allow-Headers", "*")
-    #     self.end_headers()
-    #     self.wfile.write(self.get_response().encode("utf-8"))
 
     def do_signup(self, data):
         status = 200
         # Sign up
+        
+
         return status        
 
     def do_signin(self, data):
@@ -41,7 +27,6 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     # send data from frontend to backend
     def do_POST(self):
         status = 200 
-        # insert logic (if any errors in logic, change value of status to 402)
 
         # send frontend data to server
         request = self.rfile.read(int(self.headers["Content-Length"]))
