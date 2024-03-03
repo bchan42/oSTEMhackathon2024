@@ -96,6 +96,7 @@ func handleLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Println("Received /location request for", uid)
+	log.Println(r.Header)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	var l Location
 	switch r.Method {
