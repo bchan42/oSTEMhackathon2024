@@ -1,6 +1,17 @@
 version: '3'
 
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    depends_on:
+      - caddy
+      - mongodb
+
   caddy:
     image: caddy:latest
     restart: unless-stopped
@@ -18,7 +29,7 @@ services:
       - MONGODB_INITDB_ROOT_USERNAME=user
       - MONGODB_INITDB_ROOT_PASSWORD=pass
     ports:
-      - 27017:27017
+      - "27017:27017"
     volumes:
       - type: bind
         source: ./data

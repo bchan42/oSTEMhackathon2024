@@ -38,7 +38,8 @@ func handleRemoveUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if res, err := users.DeleteOne(context.TODO(), bson.D{{"name", u.Name}}); err != nil || res.DeletedCount == 0 {
+	res, err := users.DeleteOne(context.TODO(), bson.D{{"name", u.Name}})
+	if err != nil || res.DeletedCount == 0 {
 		http.Error(w, "user does not exist", http.StatusBadRequest)
 		return
 	}
