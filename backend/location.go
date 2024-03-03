@@ -59,6 +59,8 @@ func handleNearest(w http.ResponseWriter, r *http.Request) {
 		n = 1
 	}
 
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	nearest := make([]Location, 0, n)
 	var o Location
 	cursor, err := locations.Find(context.TODO(), bson.D{{"user_id", bson.D{{"$ne", uid}}}})
@@ -90,6 +92,7 @@ func handleLocation(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "empty user_id", http.StatusBadRequest)
 		return
 	}
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	var l Location
 	switch r.Method {
 	case http.MethodGet:
