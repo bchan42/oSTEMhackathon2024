@@ -1,3 +1,7 @@
+{
+	debug
+}
+
 mongo.lone-faerie.xyz {
 	uri strip_prefix /api
 	@cors {
@@ -9,10 +13,10 @@ mongo.lone-faerie.xyz {
 		Access-Control-Allow-Headers *
 	}
 
-	reverse_proxy /user/* mongo.lone-faerie.xyz:8081 {
+	reverse_proxy /user* mongo.lone-faerie.xyz:8081 {
 		header_down -Access-Control*
 	}
-	reverse_proxy /location/* mongo.lone-faerie.xyz:8080 {
+	reverse_proxy /location* mongo.lone-faerie.xyz:8080 {
 		header_down -Access-Control*
 	}
 	respond @cors 204
