@@ -16,6 +16,21 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
 
+        // custom icons
+        var user_icon = L.icon({
+            iconUrl: 'user_icon_3.png',
+            iconSize: [50, 50], // size of the icon
+            iconAnchor: [25.5, 38], // point of the icon which will correspond to marker's location
+            popupAnchor: [0, -45] // point from which the popup should open relative to the iconAnchor
+        });
+        var gay_icon = L.icon({
+            iconUrl: 'gay_icon.png',
+            iconSize: [45, 45], // size of the icon
+            iconAnchor: [25.5, 38], // point of the icon which will correspond to marker's location
+            popupAnchor: [0, -45] // point from which the popup should open relative to the iconAnchor
+        });
+
+
         // Fetching Locations from API
         function fetchAndFormatNearestLocations(userId, range, count) {
             fetch(`https://mongo.lone-faerie.xyz/api/location/nearest?user_id=${userId}&range=${range}&count=${count}`
@@ -73,13 +88,13 @@
                     user_latitude = position.coords.latitude
                     user_longitude = position.coords.longitude
 
-                    mymap = L.map('mapid').setView([user_latitude, user_longitude], 13);
+                    mymap = L.map('mapid').setView([user_latitude, user_longitude], 15);
 
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '© OpenStreetMap contributors'
                     }).addTo(mymap);
                     
-                    L.marker([user_latitude, user_longitude]) // Add user marker
+                    L.marker([user_latitude, user_longitude], {icon: user_icon}) // Add user marker
                         .addTo(mymap)
                         .bindPopup("You")
                         .openPopup();
@@ -115,7 +130,7 @@
         // Function for adding markers to map given list of locations
         function addMarkersToMap(locations, mymap) {
             locations.forEach(location => {
-                L.marker([location.lat, location.lon]).addTo(mymap)
+                L.marker([location.lat, location.lon], {icon:gay_icon}).addTo(mymap)
                     .bindPopup(location.userId);
             });
         }
