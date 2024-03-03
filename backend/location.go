@@ -34,13 +34,14 @@ func (l Location) Distance(o Location, maxRange float64) (float64, error) {
 var locations *mongo.Collection
 
 func handleNearest(w http.ResponseWriter, r *http.Request) {
+	log.Println("Received request for", r.URL)
+	log.Println(r.Header)
 	q := r.URL.Query()
 	var uid string
 	if uid = q.Get("user_id"); uid == "" {
 		http.Error(w, "empty user_id", http.StatusBadRequest)
 		return
 	}
-	log.Println("Received request for /location/nearest")
 	var l Location
 	err := locations.FindOne(context.TODO(), bson.D{{"user_id", uid}}).Decode(&l)
 	if err != nil {
@@ -90,14 +91,14 @@ func handleNearest(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleLocation(w http.ResponseWriter, r *http.Request) {
+	log.Println("Received /location request")
 	q := r.URL.Query()
 	var uid string
 	if uid = q.Get("user_id"); uid == "" {
 		http.Error(w, "empty user_id", http.StatusBadRequest)
 		return
 	}
-	log.Println("Received /location request for", uid)
-	log.Println(r.Header)
+	log.Println(r.Method)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "*")
 
