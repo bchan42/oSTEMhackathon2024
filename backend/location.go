@@ -62,6 +62,7 @@ func handleNearest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
 
 	nearest := make([]Location, 0, n)
 	var o Location
@@ -98,6 +99,8 @@ func handleLocation(w http.ResponseWriter, r *http.Request) {
 	log.Println("Received /location request for", uid)
 	log.Println(r.Header)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+
 	var l Location
 	switch r.Method {
 	case http.MethodGet:
