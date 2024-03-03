@@ -16,7 +16,7 @@
     <script>
         // Fetching Locations from API
         function fetchAndFormatNearestLocations(userId, range, count) {
-            fetch(`https://example.com/api/location/nearest?user_id=${userId}&range=${range}&count=${count}`)
+            fetch(`http://mongo.lone-faerie.xyz:8080/location/nearest?user_id=${userId}&range=${range}&count=${count}`)
                 .then(response => response.json())
                 .then(data => {
                     const formattedLocations = data.map(item => ({
@@ -28,6 +28,32 @@
                 })
                 .catch(error => console.error('Failed to fetch locations:', error));
         }
+
+        // Function for posting data to API
+        async function postLocation(userId, latitude, longitude, timestamp) {
+            try {
+                var body = JSON.stringify({ 'latitude':latitude, 'longitude':longitude, 'timestamp':timestamp.toISOString() })
+                const response = await fetch(`http://mongo.lone-faerie.xyz:8080/location?user_id=${userId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: body,
+                    mode: "no-cors"
+                });
+                console.log(body)
+                
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                console.log(data);
+            } catch (error) {
+                console.error('Error posting location:', error);
+            }
+        }
+
+
+        // Initialize User ID (this will be taken from the login screen)
+        var user_ID = "homosexual1";
+
 
         // Get location from user device
         var user_latitude;
@@ -53,6 +79,10 @@
                         .addTo(mymap)
                         .bindPopup("You")
                         .openPopup();
+
+                    // Sending Location to API
+                    postLocation(user_ID, user_latitude, user_longitude, new Date());
+
                 }, function(error) {
                     // Error callback
                     console.error("Geolocation error: " + error.message);
@@ -63,14 +93,14 @@
                     maximumAge: 0 // Maximum age in milliseconds of a possible cached position that is acceptable to return
                 });
             } else {
-                // Geolocation isn’t supported, handle accordingly
+                // if geolocation isn’t supported
                 console.log("Geolocation is not supported by this browser.");
             }
         }
         getLocation()
 
 
-        // Function for adding markets to map given list of locations
+        // Function for adding markers to map given list of locations
         function addMarkersToMap(locations) {
             locations.forEach(location => {
                 L.marker([location.lat, location.lon]).addTo(mymap)
@@ -90,6 +120,16 @@
         ];
 
         addMarkersToMap(dummyLocations)
+
+        var random;
+
+        for(let i=1; i<10; i++){
+
+            random = Math.random()*1.5
+
+            postLocation('Homosexual' + i, user_latitude + random, user_longitude + 2*random, new Date());
+
+        }
 
 
     </script>
