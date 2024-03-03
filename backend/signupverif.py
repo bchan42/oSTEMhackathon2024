@@ -1,6 +1,6 @@
 # # SIGN UP VERIF
 
-# from pymongo import MongoClient
+from pymongo import MongoClient
 
 import json
 from functools import cached_property
@@ -13,6 +13,8 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def do_signup(self, data):
         status = 200
         # Sign up
+        if check_calpoly(data['email']) is False or check_password(data['password']) is False:
+            return 402
         if users.find_one({'email': data['email']}) is not None:
             return 402
         
@@ -22,6 +24,8 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def do_signin(self, data):
         status = 200
         # Sign in
+        if users.find_one({'email': data['email'], 'password': data['password']}) is None:
+            return 402
         return status
 
     # send data from frontend to backend
@@ -50,7 +54,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
 
 def get_database():
    # Provide the mongodb atlas url to connect python to mongodb using pymongo
-   CONNECTION_STRING = "mongodb+srv://user:pass@cluster.mongodb.net/myFirstDatabase"
+   CONNECTION_STRING = "mongodb+://user:pass@mongo.lone-faerie.xyz:27017"
    # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
    client = MongoClient(CONNECTION_STRING)
    # Create the database for our example (we will use the same database throughout the tutorial
@@ -63,8 +67,8 @@ if __name__ == "__main__":
     global users
     users = dbname['users']
 
-#     server = HTTPServer(("0.0.0.0", 8000), WebRequestHandler)
-#     server.serve_forever()
+    server = HTTPServer(("0.0.0.0", 8000), WebRequestHandler)
+    server.serve_forever()
 
 
 # add this stuff to end
