@@ -42,6 +42,25 @@
                         userId: item.user_id
                     }));
 
+                    // TEST ONLY BELOW
+                    const updatedLocations = formattedLocations.map(location => {
+                        // Create a small random walk for each location
+                        const randomLatDelta = Math.random() * 0.0002 - 0.0001; // Random number between -0.01 and 0.01
+                        const randomLonDelta = Math.random() * 0.0002 - 0.0001; // Random number between -0.01 and 0.01
+                        // Post the updated location
+                        postLocation(location.userId,
+                                    location.lat + randomLatDelta,
+                                    location.lon + randomLonDelta,
+                                    new Date());
+                        // Return the updated location object
+                        return {
+                            ...location,
+                            lat: location.lat + randomLatDelta,
+                            lon: location.lon + randomLonDelta
+                        };
+                    });
+                    // TEST ONLY ^^
+
                     // Add nearest users to map
                     addMarkersToMap(formattedLocations, mymap)
 
@@ -176,12 +195,17 @@
         // #########################[ Initialize ]#################################################
 
         getLocation()
+        // then fetch nearest users
+        // then add markers
+        // then post location
+
+        // ##########################[ Main Game Loop ]#####################################################
+
         const interval = 5000; // every 5 seconds
         const duration = 1 * 60 * 1000; // for 1 minute
         const endTime = Date.now() + duration;
 
-        // ##########################[ Game Loop ]#####################################################
-
+        // Begin Loop
         const gameLoopInterval = setInterval(() => {
             // Check if the current time is past the end time
             if (Date.now() >= endTime) {
@@ -191,6 +215,9 @@
                 getLocation_loop(); // Execute the iteration
             }
         }, interval);
+
+
+
 
     </script>
 </body>
