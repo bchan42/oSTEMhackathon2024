@@ -1,0 +1,4 @@
+mongo.lone-faerie.xyz {
+	uri strip_prefix /api
+	reverse_proxy mongo.lone-faerie.xyz:8080
+}
