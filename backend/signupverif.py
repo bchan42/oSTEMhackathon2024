@@ -133,12 +133,3 @@ def check_password(user_info):
 
 
 # SIGN IN VERIF
-
-# check if email in DB
-# check if assoc paaswork is correct
-# both true -> force start url
-# not, try again
-
-def already_exists(user_info):
-    # if user_info.key() == 
-    return 'Bern' in user_info.values()
