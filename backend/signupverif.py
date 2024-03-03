@@ -13,8 +13,6 @@ from urllib.parse import parse_qsl, urlparse
 class WebRequestHandler(BaseHTTPRequestHandler):
     # ...
 
-    path = "/user"
-
     # # 
     # def do_GET(self):
     #     status = 200
@@ -30,6 +28,16 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     #     self.end_headers()
     #     self.wfile.write(self.get_response().encode("utf-8"))
 
+    def do_signup(self, data):
+        status = 200
+        # Sign up
+        return status        
+
+    def do_signin(self, data):
+        status = 200
+        # Sign in
+        return status
+
     # send data from frontend to backend
     def do_POST(self):
         status = 200 
@@ -39,6 +47,12 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         request = self.rfile.read(int(self.headers["Content-Length"]))
         data = json.loads(request)
 
+        if self.path == "/user/signup":
+            status = self.do_signup(data)
+        elif self.path == "/user/signin":
+            status = self.do_signin(data)
+        else:
+            status = 404
 
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
