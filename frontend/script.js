@@ -37,7 +37,7 @@ signupBtn.addEventListener("click", () => {
 
     sendData(name, email, password)
     .then(() => {
-        window.location.replace("http://127.0.0.1:5500/frontend/map.html");
+        window.location.replace("http://127.0.0.1:5500/frontend/map-demo.html");
     }).catch(() => {
 
     });
