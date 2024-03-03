@@ -16,7 +16,7 @@
     <script>
         // Fetching Locations from API
         function fetchAndFormatNearestLocations(userId, range, count) {
-            fetch(`http://mongo.lone-faerie.xyz:8080/location/nearest?user_id=${userId}&range=${range}&count=${count}`)
+            fetch(`https://mongo.lone-faerie.xyz/api/location/nearest?user_id=${userId}&range=${range}&count=${count}`)
                 .then(response => response.json())
                 .then(data => {
                     const formattedLocations = data.map(item => ({
@@ -33,7 +33,7 @@
         async function postLocation(userId, latitude, longitude, timestamp) {
             try {
                 var body = JSON.stringify({ 'latitude':latitude, 'longitude':longitude, 'timestamp':timestamp.toISOString() })
-                const response = await fetch(`http://mongo.lone-faerie.xyz:8080/location?user_id=${userId}`, {
+                const response = await fetch(`https://mongo.lone-faerie.xyz/api/location?user_id=${userId}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: body,
