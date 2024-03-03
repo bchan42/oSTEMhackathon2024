@@ -1,26 +1,32 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"math"
 	"net/http"
 	"sort"
 	"strconv"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var errRange = errors.New("Location out of range")
 
-// const mongoURI = "mongodb://user:pass@mongo.lone-faerie.xyz:27107"
+const mongoURI = "mongodb://user:pass@mongo.lone-faerie.xyz:27017"
 
 type Location struct {
-	Latitude  float64   `json:"latitude"`
-	Longitude float64   `json:"longitude"`
-	Timestamp time.Time `json:"timestamp"`
-	UserID    string    `json:"user_id,omitempty"`
-	distance  float64   `json:"-"`
+	Latitude  float64   `bson:"latitude" json:"latitude"`
+	Longitude float64   `bson:"longitude" json:"longitude"`
+	Timestamp time.Time `bson:"timestamp" json:"timestamp"`
+	UserID    string    `bson:"user_id,omitempty" json:"user_id,omitempty"`
+	distance  float64   `bson:"-" json:"-"`
 }
 
 func (l Location) Distance(o Location, maxRange float64) (float64, error) {
@@ -32,9 +38,7 @@ func (l Location) Distance(o Location, maxRange float64) (float64, error) {
 	return math.Sqrt(math.Pow(dlat, 2) + math.Pow(dlon, 2)), nil
 }
 
-var locations map[string]Location
-
-// var locationsColl *mongo.Collection
+var locations *mongo.Collection
 
 func handleNearest(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
@@ -43,9 +47,10 @@ func handleNearest(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "empty user_id", http.StatusBadRequest)
 		return
 	}
-	l, ok := locations[uid]
-	if !ok {
-		http.Error(w, "location not found", http.StatusNotFound)
+	var l Location
+	err := locations.FindOne(context.TODO(), bson.D{{"user_id", uid}}).Decode(&l)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 	var (
@@ -63,8 +68,11 @@ func handleNearest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	nearest := make([]Location, 0, n)
-	for k, o := range locations {
-		if k == uid {
+	var o Location
+	cursor, err := locations.Find(context.TODO(), bson.D{{"user_id", bson.D{{"$ne", uid}}}})
+	for cursor.Next(context.TODO()) {
+		cursor.Decode(&o)
+		if o.UserID == uid {
 			continue
 		}
 		if d, err := l.Distance(o, rn); err == nil {
@@ -93,9 +101,10 @@ func handleLocation(w http.ResponseWriter, r *http.Request) {
 	var l Location
 	switch r.Method {
 	case http.MethodGet:
-		l, ok := locations[uid]
-		if !ok {
-			http.Error(w, "location not found", http.StatusNotFound)
+		// l, ok := locations[uid]
+		err := locations.FindOne(context.TODO(), bson.D{{"user_id", uid}}).Decode(&l)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
 		l.UserID = ""
@@ -106,25 +115,33 @@ func handleLocation(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		l.UserID = uid
-		locations[uid] = l
+		if res, err := locations.ReplaceOne(context.TODO(), bson.D{{"user_id", uid}}, l); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		} else if res.MatchedCount == 0 {
+			if _, err := locations.InsertOne(context.TODO(), l); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+			}
+		}
+		w.WriteHeader(200)
 	}
 }
 
 func main() {
-	locations = make(map[string]Location)
+	// locations = make(map[string]Location)
 
-	// client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mongoURI))
-	// if err != nil {
-	// 	panic(err)
-	// }
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mongoURI))
+	if err != nil {
+		panic(err)
+	}
 
-	// defer func() {
-	// 	if err := client.Disconnect(context.TODO()); err != nil {
-	// 		panic(err)
-	// 	}
-	// }()
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
 
-	// locationsColl = client.Database("db").Collection("locations")
+	locations = client.Database("db").Collection("locations")
+	fmt.Println("mongodb connected")
 
 	http.HandleFunc("/location/nearest", handleNearest)
 	http.HandleFunc("/location", handleLocation)
