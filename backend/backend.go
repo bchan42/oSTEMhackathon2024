@@ -38,8 +38,8 @@ func main() {
 	http.HandleFunc("/location/nearest", handleNearest)
 	http.HandleFunc("/location", handleLocation)
 
-	http.HandleFunc("/user/add", handleAddUser)
-	http.HandleFunc("/user/remove", handleRemoveUser)
+	//http.HandleFunc("/user/add", handleAddUser)
+	//http.HandleFunc("/user/remove", handleRemoveUser)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
