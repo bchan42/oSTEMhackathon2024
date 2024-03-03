@@ -1,0 +1,4 @@
+packages installed
+
+python -m pip install "pymongo[srv]"
+
