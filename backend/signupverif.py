@@ -46,8 +46,8 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def do_signup(self, data):
         status = 200
         # Sign up
-        #if check_calpoly(data) is False or check_password(data) is False:
-        #    return 402
+        if check_calpoly(data) is False or check_password(data) is False:
+            return 402
         if users.find_one({'email': data['email']}) is not None:
             return 402
         
