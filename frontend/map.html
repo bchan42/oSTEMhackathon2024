@@ -88,7 +88,7 @@
                     user_latitude = position.coords.latitude
                     user_longitude = position.coords.longitude
 
-                    mymap = L.map('mapid').setView([user_latitude, user_longitude], 15);
+                    mymap = L.map('mapid').setView([user_latitude, user_longitude], 17);
 
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '© OpenStreetMap contributors'
@@ -131,7 +131,7 @@
                     user_latitude = position.coords.latitude
                     user_longitude = position.coords.longitude
 
-                    mymap.setView([user_latitude, user_longitude], 15)
+                    mymap.setView([user_latitude, user_longitude])
                     
                     userMarker.setLatLng([user_latitude, user_longitude]);
 
